@@ -1,5 +1,6 @@
 // content-script.js
 (function () {
+    console.log("Content script loaded");
     const title = document.querySelector("title")?.textContent ?? "No title";
     const links = [...document.querySelectorAll("a")]
       .slice(0, 5)

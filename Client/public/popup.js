@@ -5,3 +5,5 @@ chrome.runtime.onMessage.addListener((msg) => {
     document.getElementById("output").textContent =
       `Title: ${msg.title}\nLinks:\n- ${msg.links.join("\n- ")}`;
   });
+
+

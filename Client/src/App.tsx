@@ -3,14 +3,23 @@
 import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
+
 import './App.css'
 
 function App() {
   const [count, setCount] = useState(0)
-  const captureScreenShot = ()=>{
-    //@ts-ignore
-    chrome.runtime.sendMessage({ type: "ScreenShot"});
-  }
+  const captureScreenShot = () => {
+     console.log("reached");
+     //@ts-ignore
+     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+       if (tabs[0]?.id) {
+        console.log(tabs[0].id)
+        //@ts-ignore
+         chrome.tabs.sendMessage(tabs[0].id, { type: "ScreenShot" });
+         console.log("Sent Message");
+       }
+     });
+   }
   
   return (
     <>

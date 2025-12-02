@@ -19,6 +19,7 @@ import html2canvas from "html2canvas";
         })
     chrome.runtime.onMessage.addListener((msg)=>{
       console.log("Receive one message from the popup",msg);
+      alert("Message Received");
       if(msg.type == "ScreenShot"){
         html2canvas(document.body).then((res)=>{
           console.log(res);

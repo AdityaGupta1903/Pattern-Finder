@@ -10,22 +10,15 @@ import html2canvas from "html2canvas";
   
     console.log("Page title:", title);
     console.log("First five links:", links);  
-    chrome.runtime.sendMessage({ type: "PAGE_SUMMARY", title, links });
-     html2canvas(document.body).then((res)=>{
-          var imageData = res.toDataURL('image/png');
-          console.log(imageData);
-          var img = new Image();
-          img.src = imageData;
-        })
     chrome.runtime.onMessage.addListener((msg)=>{
       console.log("Receive one message from the popup",msg);
-      alert("Message Received");
       if(msg.type == "ScreenShot"){
         html2canvas(document.body).then((res)=>{
-          console.log(res);
+          var imageData = res.toDataURL('image/png');
+          chrome.runtime.sendMessage({type:"ScreenShot",data:imageData});
+          console.log("Sent the screen shot to the extension");
         })
         /// Capture the Screen Shot and send back to popup.js and popup.js will forward this to the backend for analysis.
-        console.log("Captured the screenshot was clicked");
       }
     })
   })();

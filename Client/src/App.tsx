@@ -1,26 +1,48 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useEffect, useState } from "react";
+import reactLogo from "./assets/react.svg";
+import viteLogo from "/vite.svg";
 
-import './App.css'
+import "./App.css";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
   const captureScreenShot = () => {
-     console.log("reached");
-     //@ts-ignore
-     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-       if (tabs[0]?.id) {
-        console.log(tabs[0].id)
+    //@ts-ignore
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs[0]?.id) {
+        console.log(tabs[0].id);
         //@ts-ignore
-         chrome.tabs.sendMessage(tabs[0].id, { type: "ScreenShot" });
-         console.log("Sent Message");
-       }
-     });
-   }
-  
+        chrome.tabs.sendMessage(tabs[0].id, { type: "ScreenShot" });
+        console.log("Sent Message");
+      }
+    });
+  };
+
+  useEffect(() => {
+    const ReceiveScreenShot = (msg: any) => {
+      alert("Screenshot received in react component");
+      console.log(msg);
+      // Handle the screenshot data here
+      if (msg.type === "ScreenShot" && msg.data) {
+        // Do something with msg.data (the screenshot)
+      }
+      return true; // Important: return true to indicate message handled
+    };
+    
+    //@ts-ignore
+    chrome.runtime.onMessage.addListener(ReceiveScreenShot);
+    
+    // Cleanup: remove listener when component unmounts
+    return () => {
+      //@ts-ignore
+      chrome.runtime.onMessage.removeListener(ReceiveScreenShot);
+    };
+  }, []);
+
+
   return (
     <>
       <div>
@@ -33,10 +55,12 @@ function App() {
       </div>
       <h1>Vite + React</h1>
       <div className="card">
-        <button onClick={() =>{
-          captureScreenShot();
-          setCount((count) => count + 1)
-          }}>
+        <button
+          onClick={() => {
+            captureScreenShot();
+            setCount((count) => count + 1);
+          }}
+        >
           count is {count}
         </button>
         <p>
@@ -47,7 +71,7 @@ function App() {
         Click on the Vite and React logos to learn more
       </p>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

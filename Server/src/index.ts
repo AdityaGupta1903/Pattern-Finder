@@ -21,16 +21,31 @@ app.post("/chat", async (req, res) => {
   /// Parse the Chart Data and forward this to LLM to predict the chartpatterns and do analysis
   try {
     let ImageData = req.body.data;
-    console.log(ImageData);
+    
+    // Strip the data URI prefix if present (e.g., "data:image/png;base64,")
+    if (typeof ImageData === 'string' && ImageData.includes(',')) {
+      ImageData = ImageData.split(',')[1];
+    }
+    
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash-lite",
-      contents: [{ inlineData: { mimeType: "image/png", data: ImageData } }],
+      contents: [{
+        parts: [
+          { inlineData: { mimeType: "image/png", data: ImageData } },
+          { text: "Can you predict the any chart patterns from it" }
+        ]
+      }]
     });
     console.log(response.text);
     res.send({ message: response.text });
-  } catch (err) {
-    console.log(err);
-    res.send({ err: err });
+  } catch (err: any) {
+    console.error("Error details:", err);
+    console.error("Error status:", err?.status);
+    console.error("Error message:", err?.message);
+    res.status(err?.status || 500).send({ 
+      error: err?.message || "Internal server error",
+      status: err?.status || 500
+    });
   }
 });
 
